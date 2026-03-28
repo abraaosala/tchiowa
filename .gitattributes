@@ -1,0 +1,9 @@
+* text=auto
+
+# Ignora os assets de front-end nas estatísticas de linguagem do GitHub
+public/assets/** linguist-vendored
+resources/js/** linguist-vendored
+resources/css/** linguist-vendored
+
+# (Opcional) Forçar o GitHub a reconhecer arquivos específicos como PHP sempre
+*.php linguist-language=PHP
