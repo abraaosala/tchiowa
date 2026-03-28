@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Console\Commands;
+
+use App\Console\ConsoleHelpers;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class MakeRepository extends Command
+{
+    use ConsoleHelpers;
+
+    protected static $defaultName = 'make:repository';
+    protected static $defaultDescription = 'Cria um Repository';
+
+    protected function configure(): void
+    {
+        $this->addArgument('name', InputArgument::REQUIRED, 'Nome da classe');
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $name = $input->getArgument('name');
+        $class = $this->studly($name);
+        if (!str_ends_with($class, 'Repository')) {
+            $class .= 'Repository';
+        }
+        
+        $path = dirname(__DIR__, 3) . "/app/Infrastructure/Persistence/Repositories/{$class}.php";
+        
+        $content = $this->renderStub('repository', [
+            'namespace' => 'App\\Infrastructure\\Persistence\\Repositories',
+            'class' => $class
+        ]);
+        
+        $this->putClassFile($path, $content, $output);
+        
+        return Command::SUCCESS;
+    }
+}

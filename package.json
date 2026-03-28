@@ -1,0 +1,16 @@
+{
+  "name": "tcul-logistics",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx tailwindcss -i ./resources/css/app.css -o ./public/assets/css/app.css --watch & npx esbuild ./resources/js/app.js --bundle --outfile=./public/assets/js/app.js --watch",
+    "build": "npx tailwindcss -i ./resources/css/app.css -o ./public/assets/css/app.css --minify && npx esbuild ./resources/js/app.js --bundle --outfile=./public/assets/js/app.js --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "esbuild": "^0.20.0"
+  },
+  "dependencies": {
+    "alpinejs": "^3.15.8"
+  }
+}

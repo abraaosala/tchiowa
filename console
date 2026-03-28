@@ -1,0 +1,86 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Dotenv\Dotenv;
+use Illuminate\Container\Container;
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Config\Repository as ConfigRepository;
+use Symfony\Component\Console\Application;
+
+// Carrega variáveis de ambiente
+if (file_exists(__DIR__ . '/.env')) {
+    Dotenv::createImmutable(__DIR__)->load();
+}
+
+if (!function_exists('env')) {
+    function env(string $key, mixed $default = null): mixed {
+        $value = $_ENV[$key] ?? $_SERVER[$key] ?? null;
+        return $value === null ? $default : $value;
+    }
+}
+
+// Inicializa Container
+$container = new Container();
+Container::setInstance($container);
+
+// Config
+$configPath = __DIR__ . '/config';
+$configFiles = glob($configPath . '/*.php') ?: [];
+$configData = [];
+foreach ($configFiles as $file) {
+    $name = basename($file, '.php');
+    $configData[$name] = require $file;
+}
+$config = new ConfigRepository($configData);
+$container->instance('config', $config);
+
+// Database / Eloquent
+$capsule = new Capsule($container);
+$defaultConnection = $config->get('database.default') ?: env('DB_CONNECTION', 'mysql');
+$dbConfig = $config->get("database.connections.{$defaultConnection}");
+
+if (empty($dbConfig) && $defaultConnection !== 'mysql') {
+    $defaultConnection = 'mysql';
+    $dbConfig = $config->get("database.connections.mysql");
+}
+
+if (!empty($dbConfig)) {
+    $capsule->addConnection($dbConfig);
+    $capsule->setAsGlobal();
+    $capsule->bootEloquent();
+}
+
+$application = new Application('Tchiowa Console', '1.0.0');
+
+// Registra os comandos
+$commands = [
+    \App\Console\Commands\Serve::class,
+    \App\Console\Commands\DbCreate::class,
+    \App\Console\Commands\DbDrop::class,
+    \App\Console\Commands\DbSeed::class,
+    \App\Console\Commands\Migrate::class,
+    \App\Console\Commands\MigrateRollback::class,
+    \App\Console\Commands\MigrateStatus::class,
+    \App\Console\Commands\MigrateBreakpoint::class,
+    \App\Console\Commands\MakeController::class,
+    \App\Console\Commands\MakeService::class,
+    \App\Console\Commands\MakeMiddleware::class,
+    \App\Console\Commands\MakeRepository::class,
+    \App\Console\Commands\MakeModel::class,
+    \App\Console\Commands\MakeSeed::class,
+    \App\Console\Commands\MakeMigration::class,
+];
+
+foreach ($commands as $commandClass) {
+    if (class_exists($commandClass)) {
+        $application->add(new $commandClass());
+    }
+}
+
+$application->run();
