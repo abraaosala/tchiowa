@@ -72,16 +72,6 @@ if (!function_exists('session')) {
     }
 }
 
-if (!function_exists('auth')) {
-    /**
-     * Helper para controle de autenticação.
-     */
-    function auth(): \App\Application\Services\AuthService
-    {
-        global $container;
-        return $container->make(\App\Application\Services\AuthService::class);
-    }
-}
 
 if (!function_exists('flash')) {
     /**

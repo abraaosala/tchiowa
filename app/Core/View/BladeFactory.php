@@ -20,7 +20,7 @@ class BladeFactory
         $blade = new BladeOne($views, $cache, BladeOne::MODE_AUTO);
 
         // Compartilha variáveis globais com todas as views
-        $blade->share('auth', auth());
+
         $blade->share('session', session());
         $blade->share('flash', flash());
         $blade->share('errors', flash()->getError() ?: null);

@@ -85,16 +85,6 @@ $container->singleton(\App\Core\Session\Session::class, function () {
     return new \App\Core\Session\Session();
 });
 
-$container->singleton(\App\Infrastructure\Persistence\Repositories\UserRepository::class, function () {
-    return new \App\Infrastructure\Persistence\Repositories\UserRepository();
-});
-
-$container->singleton(\App\Application\Services\AuthService::class, function ($container) {
-    return new \App\Application\Services\AuthService(
-        $container->make(\App\Infrastructure\Persistence\Repositories\UserRepository::class),
-        $container->make(\App\Core\Session\Session::class)
-    );
-});
 
 $container->singleton(\App\Application\Services\FlashService::class, function ($container) {
     return new \App\Application\Services\FlashService(

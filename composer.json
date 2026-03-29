@@ -1,7 +1,7 @@
 {
-    "name": "salaab/base",
-    "description": "\"Sistema de Base\"",
-     "type": "project",
+    "name": "salaab/framework",
+    "description": "Um mini-framework em PHP prático, leve e moderno, construído utilizando os poderosos e flexíveis componentes do Eloquent (Illuminate) e Symfony Console. Esta base funciona como um esqueleto (boilerplate) pronto para o ínicio de qualquer projeto PHP com uma estrutura organizada (MVC/CSR)",
+    "type": "project",
     "license": "proprietary",
     "require": {
         "php": "^8.1",
