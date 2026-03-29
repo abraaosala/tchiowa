@@ -5,7 +5,7 @@ Um mini-framework em PHP prático, leve e moderno, construído utilizando os pod
 ## 🧰 Requisitos
 
 - PHP `^8.1` ou superior
-- [Composer](https://packagist.org/packages/salaab/base) instanciado na máquina
+- [Composer](https://packagist.org/packages/salaab/framwork) instanciado na máquina
 
 ## 📦 Como Instalar
 
