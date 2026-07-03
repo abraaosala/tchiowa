@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 // Suprime avisos deprecatados de libs de terceiros
-//error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;

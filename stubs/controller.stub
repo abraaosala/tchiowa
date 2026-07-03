@@ -10,5 +10,37 @@ class {{ class }}
     {
         // TODO: implementar
     }
+    public function show(\$id)
+    {
+        // TODO: implementar
+    }
+    public function create()
+    {
+        // TODO: implementar
+    }
+    public function store()
+    {
+        // TODO: implementar
+    }
+
+    public function edit(\$id)
+    {
+        // TODO: implementar
+    }
+
+    public function update(\$id)
+    {
+        // TODO: implementar
+    }
+    public function update(\$id)
+    {
+        // TODO: implementar
+    }
+    
+    
+    
+
+
+    
 }
 

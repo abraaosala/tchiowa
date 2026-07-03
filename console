@@ -58,29 +58,34 @@ if (!empty($dbConfig)) {
 
 $application = new Application('Tchiowa Console', '1.0.0');
 
-// Registra os comandos
-$commands = [
-    \App\Console\Commands\Serve::class,
-    \App\Console\Commands\DbCreate::class,
-    \App\Console\Commands\DbDrop::class,
-    \App\Console\Commands\DbSeed::class,
-    \App\Console\Commands\Migrate::class,
-    \App\Console\Commands\MigrateRollback::class,
-    \App\Console\Commands\MigrateStatus::class,
-    \App\Console\Commands\MigrateBreakpoint::class,
-    \App\Console\Commands\MakeController::class,
-    \App\Console\Commands\MakeService::class,
-    \App\Console\Commands\MakeMiddleware::class,
-    \App\Console\Commands\MakeRepository::class,
-    \App\Console\Commands\MakeModel::class,
-    \App\Console\Commands\MakeSeed::class,
-    \App\Console\Commands\MakeMigration::class,
-];
+// Serviços partilhados
+$dbManager = new \App\Console\DatabaseManager();
+$phinxRunner = new \App\Console\PhinxRunner();
+$stubService = new \App\Console\StubService();
 
-foreach ($commands as $commandClass) {
-    if (class_exists($commandClass)) {
-        $application->add(new $commandClass());
-    }
-}
+// Comandos sem dependências
+$application->add(new \App\Console\Commands\Serve());
+
+// Comandos com DatabaseManager
+$application->add(new \App\Console\Commands\DbCreate($dbManager));
+$application->add(new \App\Console\Commands\DbDrop($dbManager));
+
+// Comandos com PhinxRunner
+$application->add(new \App\Console\Commands\DbSeed($phinxRunner));
+$application->add(new \App\Console\Commands\MigrateRollback($phinxRunner));
+$application->add(new \App\Console\Commands\MigrateStatus($phinxRunner));
+$application->add(new \App\Console\Commands\MigrateBreakpoint($phinxRunner));
+$application->add(new \App\Console\Commands\MakeMigration($phinxRunner));
+$application->add(new \App\Console\Commands\MakeSeed($phinxRunner));
+
+// Comandos com StubService
+$application->add(new \App\Console\Commands\MakeController($stubService));
+$application->add(new \App\Console\Commands\MakeModel($stubService));
+$application->add(new \App\Console\Commands\MakeService($stubService));
+$application->add(new \App\Console\Commands\MakeMiddleware($stubService));
+$application->add(new \App\Console\Commands\MakeRepository($stubService));
+
+// Comandos com dependências múltiplas
+$application->add(new \App\Console\Commands\Migrate($dbManager, $phinxRunner));
 
 $application->run();
