@@ -19,7 +19,7 @@ Isso irá clonar todo este espaço de trabalho com os arquivos mínimos e depend
 
 ## 🚀 Como Executar
 
-Durante o desenvolvimento, o seu ambiente possibilita rodar o servidor embutido do PHP junto com a observação (watch) e compilação do Front-End (caso utilize NPM/Vite/Tailwind). Exiba a sua aplicação no navegador através do comando:
+Durante o desenvolvimento, o seu ambiente possibilita rodar o servidor embutido do PHP junto com a observação (watch) e compilação do Front-End com Vite + Tailwind. Exiba a sua aplicação no navegador através do comando:
 
 ```bash
 php console serve
