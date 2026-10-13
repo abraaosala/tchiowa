@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DbDrop extends Command
 {
     protected static $defaultName = 'db:drop';
+
     protected static $defaultDescription = 'Elimina a base de dados definida em DB_DATABASE';
 
     public function __construct(
@@ -27,6 +28,7 @@ class DbDrop extends Command
         $this->db->drop($database);
 
         $output->writeln("<info>Base de dados '{$database}' eliminada (se existia).</info>");
+
         return Command::SUCCESS;
     }
 }

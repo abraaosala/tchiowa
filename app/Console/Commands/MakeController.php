@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MakeController extends Command
 {
     protected static $defaultName = 'make:controller';
+
     protected static $defaultDescription = 'Cria um Controller';
 
     public function __construct(
@@ -31,11 +32,11 @@ class MakeController extends Command
         foreach ($input->getArgument('name') as $name) {
             $class = $this->stubs->studly($name);
 
-            if (!str_ends_with($class, 'Controller')) {
+            if (! str_ends_with($class, 'Controller')) {
                 $class .= 'Controller';
             }
 
-            $path = dirname(__DIR__, 3) . "/app/Http/Controllers/{$class}.php";
+            $path = dirname(__DIR__, 3)."/app/Http/Controllers/{$class}.php";
 
             $content = $this->stubs->renderStub('controller', [
                 'namespace' => 'App\\Http\\Controllers',

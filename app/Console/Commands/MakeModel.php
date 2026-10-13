@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MakeModel extends Command
 {
     protected static $defaultName = 'make:model';
+
     protected static $defaultDescription = 'Cria um Model Eloquent';
 
     public function __construct(
@@ -30,9 +31,9 @@ class MakeModel extends Command
     {
         foreach ($input->getArgument('name') as $name) {
             $class = $this->stubs->studly($name);
-            $table = strtolower($class) . 's';
+            $table = strtolower($class).'s';
 
-            $path = dirname(__DIR__, 3) . "/app/Infrastructure/Persistence/Eloquent/{$class}.php";
+            $path = dirname(__DIR__, 3)."/app/Infrastructure/Persistence/Eloquent/{$class}.php";
 
             $content = $this->stubs->renderStub('model', [
                 'namespace' => 'App\\Infrastructure\\Persistence\\Eloquent',

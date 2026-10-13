@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MigrateRollback extends Command
 {
     protected static $defaultName = 'rollback';
+
     protected static $defaultDescription = 'Reverte a última migração';
 
     public function __construct(
@@ -23,6 +24,7 @@ class MigrateRollback extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->phinx->run('rollback');
+
         return Command::SUCCESS;
     }
 }

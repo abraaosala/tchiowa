@@ -10,4 +10,3 @@ return [
     'timezone' => env('APP_TIMEZONE', 'UTC'),
     'locale' => env('APP_LOCALE', 'pt'),
 ];
-

@@ -1,0 +1,11 @@
+{
+    "name": "boost-tchiowa",
+    "version": "1.0.0",
+    "description": "Boost Tchiowa — Guidelines+Skills+MCP para salaab/framework sem Laravel puro",
+    "guidelines": ["core", "php-strict", "illuminate", "bladeone", "phinx", "frontend", "pest"],
+    "skills": ["crud-tchiowa", "frontend-tchiowa", "phinx-migration"],
+    "mcp": {
+        "command": "node",
+        "args": ["mcp/tchiowa/dist/index.js"]
+    }
+}

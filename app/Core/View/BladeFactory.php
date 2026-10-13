@@ -10,10 +10,10 @@ class BladeFactory
 {
     public static function make(): BladeOne
     {
-        $views = __DIR__ . '/../../../resources/views';
-        $cache = __DIR__ . '/../../../storage/framework/views';
+        $views = __DIR__.'/../../../resources/views';
+        $cache = __DIR__.'/../../../storage/framework/views';
 
-        if (!is_dir($cache)) {
+        if (! is_dir($cache)) {
             mkdir($cache, 0777, true);
         }
 
@@ -29,4 +29,3 @@ class BladeFactory
         return $blade;
     }
 }
-

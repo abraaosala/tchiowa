@@ -42,6 +42,7 @@ class Session
     {
         $value = $_SESSION['_flash'][$key] ?? $default;
         unset($_SESSION['_flash'][$key]);
+
         return $value;
     }
 

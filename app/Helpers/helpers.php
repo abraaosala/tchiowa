@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Application\Services\FlashService;
+use App\Core\Session\Session;
 use App\Core\View\BladeFactory;
+use eftec\bladeone\BladeOne;
+use Illuminate\Http\RedirectResponse;
 
-if (!function_exists('env')) {
+if (! function_exists('env')) {
     /**
      * Lê uma variável de ambiente, com valor padrão opcional.
      */
@@ -35,11 +39,11 @@ if (!function_exists('env')) {
     }
 }
 
-if (!function_exists('blade')) {
+if (! function_exists('blade')) {
     /**
      * Retorna uma instância compartilhada do BladeOne.
      */
-    function blade(): \eftec\bladeone\BladeOne
+    function blade(): BladeOne
     {
         static $instance = null;
 
@@ -51,7 +55,7 @@ if (!function_exists('blade')) {
     }
 }
 
-if (!function_exists('view')) {
+if (! function_exists('view')) {
     /**
      * Renderiza uma view Blade e devolve o HTML como string.
      */
@@ -61,30 +65,31 @@ if (!function_exists('view')) {
     }
 }
 
-if (!function_exists('session')) {
+if (! function_exists('session')) {
     /**
      * Helper para acesso à sessão.
      */
-    function session(): \App\Core\Session\Session
+    function session(): Session
     {
         global $container;
-        return $container->make(\App\Core\Session\Session::class);
+
+        return $container->make(Session::class);
     }
 }
 
-
-if (!function_exists('flash')) {
+if (! function_exists('flash')) {
     /**
      * Helper para mensagens flash.
      */
-    function flash(): \App\Application\Services\FlashService
+    function flash(): FlashService
     {
         global $container;
-        return $container->make(\App\Application\Services\FlashService::class);
+
+        return $container->make(FlashService::class);
     }
 }
 
-if (!function_exists('old')) {
+if (! function_exists('old')) {
     /**
      * Recupera valor antigo de input (após erro de validação/login).
      */
@@ -94,14 +99,40 @@ if (!function_exists('old')) {
     }
 }
 
-if (!function_exists('redirect')) {
+if (! function_exists('config')) {
     /**
-     * Cria uma resposta de redirecionamento.
+     * Obtém um valor da configuração, ou o repositório inteiro.
      */
-    function redirect(string $path): \Illuminate\Http\RedirectResponse
+    function config(?string $key = null, mixed $default = null): mixed
     {
-        return new \Illuminate\Http\RedirectResponse($path);
+        global $container;
+
+        if ($key === null) {
+            return $container->make('config');
+        }
+
+        return $container->make('config')->get($key, $default);
     }
 }
 
+if (! function_exists('url')) {
+    /**
+     * Gera uma URL absoluta para o caminho informado.
+     */
+    function url(string $path = ''): string
+    {
+        global $container;
 
+        return $container->make('url')->to($path);
+    }
+}
+
+if (! function_exists('redirect')) {
+    /**
+     * Cria uma resposta de redirecionamento.
+     */
+    function redirect(string $path): RedirectResponse
+    {
+        return new RedirectResponse($path);
+    }
+}

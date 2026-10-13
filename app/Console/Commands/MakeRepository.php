@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MakeRepository extends Command
 {
     protected static $defaultName = 'make:repository';
+
     protected static $defaultDescription = 'Cria um Repository';
 
     public function __construct(
@@ -31,11 +32,11 @@ class MakeRepository extends Command
         foreach ($input->getArgument('name') as $name) {
             $class = $this->stubs->studly($name);
 
-            if (!str_ends_with($class, 'Repository')) {
+            if (! str_ends_with($class, 'Repository')) {
                 $class .= 'Repository';
             }
 
-            $path = dirname(__DIR__, 3) . "/app/Infrastructure/Persistence/Repositories/{$class}.php";
+            $path = dirname(__DIR__, 3)."/app/Infrastructure/Persistence/Repositories/{$class}.php";
 
             $content = $this->stubs->renderStub('repository', [
                 'namespace' => 'App\\Infrastructure\\Persistence\\Repositories',

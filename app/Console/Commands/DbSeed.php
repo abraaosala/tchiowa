@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DbSeed extends Command
 {
     protected static $defaultName = 'seed:run';
+
     protected static $defaultDescription = 'Executa os seeders';
 
     public function __construct(
@@ -50,6 +51,7 @@ class DbSeed extends Command
         }
 
         $this->phinx->run('seed:run', null, $extra);
+
         return Command::SUCCESS;
     }
 }

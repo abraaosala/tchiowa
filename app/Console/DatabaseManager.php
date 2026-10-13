@@ -6,9 +6,9 @@ namespace App\Console;
 
 use PDO;
 use RuntimeException;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class DatabaseManager
@@ -21,7 +21,7 @@ class DatabaseManager
             throw new RuntimeException('DB_DATABASE não pode ser vazio.');
         }
 
-        if (!preg_match('/^[A-Za-z0-9_]+$/', $name)) {
+        if (! preg_match('/^[A-Za-z0-9_]+$/', $name)) {
             throw new RuntimeException('Nome de base de dados inválido.');
         }
     }
@@ -29,7 +29,7 @@ class DatabaseManager
     public function exists(string $name): bool
     {
         $stmt = $this->pdo()->query(
-            'SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ' . $this->pdo()->quote($name)
+            'SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '.$this->pdo()->quote($name)
         );
 
         return (bool) $stmt->fetchColumn();
@@ -53,13 +53,13 @@ class DatabaseManager
             return;
         }
 
-        $helper = new QuestionHelper();
+        $helper = new QuestionHelper;
         $question = new ConfirmationQuestion(
             sprintf("Base de dados '%s' n\u{00e3}o existe. Criar? [Y/n] ", $name),
             true,
         );
 
-        if (!$helper->ask($input, $output, $question)) {
+        if (! $helper->ask($input, $output, $question)) {
             throw new RuntimeException('Cancelado.');
         }
 
@@ -72,7 +72,7 @@ class DatabaseManager
         $this->pdo()->exec(sprintf('DROP DATABASE IF EXISTS `%s`', $name));
     }
 
-    private function pdo(): PDO
+    public function pdo(): PDO
     {
         if ($this->pdo === null) {
             $driver = (string) env('DB_CONNECTION', 'mysql');

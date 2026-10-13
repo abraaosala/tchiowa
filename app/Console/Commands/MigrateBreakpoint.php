@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MigrateBreakpoint extends Command
 {
     protected static $defaultName = 'breakpoint';
+
     protected static $defaultDescription = 'Gere breakpoints de migração';
 
     public function __construct(
@@ -23,6 +24,7 @@ class MigrateBreakpoint extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->phinx->run('breakpoint');
+
         return Command::SUCCESS;
     }
 }

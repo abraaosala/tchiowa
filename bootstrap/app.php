@@ -2,38 +2,49 @@
 
 declare(strict_types=1);
 
+use App\Application\Services\FlashService;
+use App\Core\Session\Session;
+use App\Support\Facades\Route;
+use Dotenv\Dotenv;
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Routing\Router;
-use Illuminate\Routing\UrlGenerator;
+use Illuminate\Http\Request;
 use Illuminate\Routing\CallableDispatcher;
 use Illuminate\Routing\Contracts\CallableDispatcher as CallableDispatcherContract;
-use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use Illuminate\Routing\ControllerDispatcher;
+use Illuminate\Routing\RouteCollectionInterface;
+use Illuminate\Routing\Router;
+use Illuminate\Routing\UrlGenerator;
+use Illuminate\Support\Facades\Facade;
 use Nyholm\Psr7\Factory\Psr17Factory;
-use Dotenv\Dotenv;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 // Carrega variáveis de ambiente
-$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv = Dotenv::createImmutable(__DIR__.'/..');
 $dotenv->load();
 
 // Whoops Error Handler
 if (env('APP_DEBUG', true)) {
-    $whoops = new \Whoops\Run;
-    $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+    $whoops = new Run;
+    $whoops->pushHandler(new PrettyPageHandler);
     $whoops->register();
 }
 
-$container = new Container();
+$container = new Container;
 Container::setInstance($container);
+Facade::setFacadeApplication($container);
 
 // Config
-$configPath = __DIR__ . '/../config';
-$configFiles = glob($configPath . '/*.php') ?: [];
+$configPath = __DIR__.'/../config';
+$configFiles = glob($configPath.'/*.php') ?: [];
 $configData = [];
 
 foreach ($configFiles as $file) {
@@ -49,24 +60,22 @@ $events = new Dispatcher($container);
 $container->instance('events', $events);
 
 // Filesystem
-$filesystem = new Filesystem();
+$filesystem = new Filesystem;
 $container->instance('files', $filesystem);
 
 // Database / Eloquent
 $capsule = new Capsule($container);
 
-// Tenta obter a conexão padrão, fallback para 'mysql'
 $defaultConnection = $config->get('database.default') ?: env('DB_CONNECTION', 'mysql');
 $dbConfig = $config->get("database.connections.{$defaultConnection}");
 
-// Se a conexão não existe mas temos algo em 'mysql', usamos mysql como última tentativa
 if (empty($dbConfig) && $defaultConnection !== 'mysql') {
     $defaultConnection = 'mysql';
-    $dbConfig = $config->get("database.connections.mysql");
+    $dbConfig = $config->get('database.connections.mysql');
 }
 
 if (empty($dbConfig)) {
-    throw new \RuntimeException("Erro fatal: Configuração de base de dados para '{$defaultConnection}' não foi encontrada no arquivo config/database.php.");
+    throw new RuntimeException("Erro fatal: Configuração de base de dados para '{$defaultConnection}' não foi encontrada no arquivo config/database.php.");
 }
 
 $capsule->addConnection($dbConfig);
@@ -74,21 +83,19 @@ $capsule->setEventDispatcher($events);
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
-// Garante que o resolver está definido globalmente no Model
-\Illuminate\Database\Eloquent\Model::setConnectionResolver($capsule->getDatabaseManager());
+Model::setConnectionResolver($capsule->getDatabaseManager());
 
 $container->instance('db', $capsule->getDatabaseManager());
 $container->instance(Capsule::class, $capsule);
 
 // Repositories & Services
-$container->singleton(\App\Core\Session\Session::class, function () {
-    return new \App\Core\Session\Session();
+$container->singleton(Session::class, function () {
+    return new Session;
 });
 
-
-$container->singleton(\App\Application\Services\FlashService::class, function ($container) {
-    return new \App\Application\Services\FlashService(
-        $container->make(\App\Core\Session\Session::class)
+$container->singleton(FlashService::class, function ($container) {
+    return new FlashService(
+        $container->make(Session::class)
     );
 });
 
@@ -96,23 +103,23 @@ $container->singleton(\App\Application\Services\FlashService::class, function ($
 $router = new Router($events, $container);
 $container->instance('router', $router);
 
-// Dispatcher para Controllers (necessário para injeção de Request e outros em métodos)
-$container->singleton(\Illuminate\Routing\Contracts\ControllerDispatcher::class, function ($container) {
-    return new \Illuminate\Routing\ControllerDispatcher($container);
+$container->instance(RouteCollectionInterface::class, $router->getRoutes());
+
+$container->singleton(Illuminate\Routing\Contracts\ControllerDispatcher::class, function ($container) {
+    return new ControllerDispatcher($container);
 });
 
-// Dispatcher para closures e callables em rotas
 $container->bind(CallableDispatcherContract::class, function ($container) {
     return new CallableDispatcher($container);
 });
 
-// URL Generator (inicializado sem request, index.php fornecerá a capturada)
 $routes = $router->getRoutes();
-$url = new UrlGenerator($routes, new Illuminate\Http\Request());
+
+$url = new UrlGenerator($routes, new Request);
 $container->instance('url', $url);
 
 // PSR-7 / HTTP bridge
-$psr17Factory = new Psr17Factory();
+$psr17Factory = new Psr17Factory;
 $psrHttpFactory = new PsrHttpFactory(
     $psr17Factory,
     $psr17Factory,
@@ -123,10 +130,13 @@ $psrHttpFactory = new PsrHttpFactory(
 $container->instance(PsrHttpFactory::class, $psrHttpFactory);
 $container->instance(Psr17Factory::class, $psr17Factory);
 
+if (! class_exists('Route')) {
+    class_alias(Route::class, 'Route');
+}
+
 // Registrar rotas
-if (file_exists(__DIR__ . '/../routes/web.php')) {
-    require __DIR__ . '/../routes/web.php';
+if (file_exists(__DIR__.'/../routes/web.php')) {
+    require __DIR__.'/../routes/web.php';
 }
 
 return $container;
-

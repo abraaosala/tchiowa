@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Routing\Router;
+declare(strict_types=1);
 
-/** @var Router $router */
-$router->get('/', function () {
+use App\Support\Facades\Route;
+
+Route::get('/', function () {
     return view('welcome');
 });
