@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Migrate extends Command
 {
     protected static $defaultName = 'migrate';
+
     protected static $defaultDescription = 'Executa migrações pendentes';
 
     public function __construct(
@@ -45,6 +46,7 @@ class Migrate extends Command
             $this->db->createOrFail($database, $input, $output);
         } catch (\RuntimeException $e) {
             $output->writeln("<error>{$e->getMessage()}</error>");
+
             return Command::FAILURE;
         }
 

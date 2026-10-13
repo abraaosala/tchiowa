@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MakeMigration extends Command
 {
     protected static $defaultName = 'make:migration';
+
     protected static $defaultDescription = 'Cria uma nova migração';
 
     public function __construct(
@@ -30,6 +31,7 @@ class MakeMigration extends Command
     {
         $name = $input->getArgument('name');
         $this->phinx->run('create', $name);
+
         return Command::SUCCESS;
     }
 }

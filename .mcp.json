@@ -1,0 +1,12 @@
+{
+    "mcpServers": {
+        "tchiowa-boost": {
+            "command": "node",
+            "args": ["mcp/tchiowa/dist/index.js"]
+        },
+        "context7": {
+            "type": "remote",
+            "url": "https://mcp.context7.com/mcp"
+        }
+    }
+}

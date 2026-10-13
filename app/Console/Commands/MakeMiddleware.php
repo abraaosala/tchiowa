@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MakeMiddleware extends Command
 {
     protected static $defaultName = 'make:middleware';
+
     protected static $defaultDescription = 'Cria um Middleware';
 
     public function __construct(
@@ -31,11 +32,11 @@ class MakeMiddleware extends Command
         foreach ($input->getArgument('name') as $name) {
             $class = $this->stubs->studly($name);
 
-            if (!str_ends_with($class, 'Middleware')) {
+            if (! str_ends_with($class, 'Middleware')) {
                 $class .= 'Middleware';
             }
 
-            $path = dirname(__DIR__, 3) . "/app/Http/Middleware/{$class}.php";
+            $path = dirname(__DIR__, 3)."/app/Http/Middleware/{$class}.php";
 
             $content = $this->stubs->renderStub('middleware', [
                 'namespace' => 'App\\Http\\Middleware',

@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MakeService extends Command
 {
     protected static $defaultName = 'make:service';
+
     protected static $defaultDescription = 'Cria um Service';
 
     public function __construct(
@@ -31,11 +32,11 @@ class MakeService extends Command
         foreach ($input->getArgument('name') as $name) {
             $class = $this->stubs->studly($name);
 
-            if (!str_ends_with($class, 'Service')) {
+            if (! str_ends_with($class, 'Service')) {
                 $class .= 'Service';
             }
 
-            $path = dirname(__DIR__, 3) . "/app/Application/Services/{$class}.php";
+            $path = dirname(__DIR__, 3)."/app/Application/Services/{$class}.php";
 
             $content = $this->stubs->renderStub('service', [
                 'namespace' => 'App\\Application\\Services',

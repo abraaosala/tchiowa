@@ -27,7 +27,7 @@ class Serve extends Command
         $port = $input->getOption('port');
 
         $output->writeln("<info>Starting Development Server:</info> http://{$host}:{$port}");
-        $output->writeln("<comment>Press Ctrl+C to stop the server</comment>");
+        $output->writeln('<comment>Press Ctrl+C to stop the server</comment>');
 
         $descriptors = [
             0 => ['pipe', 'r'],
@@ -39,8 +39,8 @@ class Serve extends Command
             'php' => sprintf('php -S %s:%s -t public', $host, $port),
         ];
 
-        if (file_exists(getcwd() . '/package.json')) {
-            $output->writeln("<info>Starting NPM bundler...</info>");
+        if (file_exists(getcwd().'/package.json')) {
+            $output->writeln('<info>Starting NPM bundler...</info>');
             $npmCommand = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' ? 'npm.cmd run dev' : 'npm run dev';
             $commandsToRun['npm'] = $npmCommand;
         }
@@ -57,7 +57,7 @@ class Serve extends Command
         while (count($processes) > 0) {
             foreach ($processes as $key => $process) {
                 $status = proc_get_status($process);
-                if (!$status['running']) {
+                if (! $status['running']) {
                     proc_close($process);
                     unset($processes[$key]);
                 }

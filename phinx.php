@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 use Dotenv\Dotenv;
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-if (file_exists(__DIR__ . '/.env')) {
+if (file_exists(__DIR__.'/.env')) {
     Dotenv::createImmutable(__DIR__)->load();
 }
 
 return [
     'paths' => [
-        'migrations' => __DIR__ . '/database/migrations',
-        'seeds' => __DIR__ . '/database/seeds',
+        'migrations' => __DIR__.'/database/migrations',
+        'seeds' => __DIR__.'/database/seeds',
     ],
     'environments' => [
         'default_migration_table' => 'phinxlog',
@@ -30,4 +30,3 @@ return [
     ],
     'version_order' => 'creation',
 ];
-

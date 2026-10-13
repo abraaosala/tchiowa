@@ -69,6 +69,7 @@ $application->add(new \App\Console\Commands\Serve());
 // Comandos com DatabaseManager
 $application->add(new \App\Console\Commands\DbCreate($dbManager));
 $application->add(new \App\Console\Commands\DbDrop($dbManager));
+$application->add(new \App\Console\Commands\DbExport(new \App\Console\DatabaseExporter($dbManager)));
 
 // Comandos com PhinxRunner
 $application->add(new \App\Console\Commands\DbSeed($phinxRunner));
@@ -84,6 +85,7 @@ $application->add(new \App\Console\Commands\MakeModel($stubService));
 $application->add(new \App\Console\Commands\MakeService($stubService));
 $application->add(new \App\Console\Commands\MakeMiddleware($stubService));
 $application->add(new \App\Console\Commands\MakeRepository($stubService));
+$application->add(new \App\Console\Commands\MakeView($stubService));
 
 // Comandos com dependências múltiplas
 $application->add(new \App\Console\Commands\Migrate($dbManager, $phinxRunner));

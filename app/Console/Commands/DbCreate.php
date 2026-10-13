@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DbCreate extends Command
 {
     protected static $defaultName = 'db:create';
+
     protected static $defaultDescription = 'Cria a base de dados definida em DB_DATABASE';
 
     public function __construct(
@@ -27,6 +28,7 @@ class DbCreate extends Command
         $this->db->create($database);
 
         $output->writeln("<info>Base de dados '{$database}' criada (ou j\u{00e1} existente).</info>");
+
         return Command::SUCCESS;
     }
 }

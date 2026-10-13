@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MakeSeed extends Command
 {
     protected static $defaultName = 'make:seed';
+
     protected static $defaultDescription = 'Cria um novo seeder';
 
     public function __construct(
@@ -30,6 +31,7 @@ class MakeSeed extends Command
     {
         $name = $input->getArgument('name');
         $this->phinx->run('seed:create', $name);
+
         return Command::SUCCESS;
     }
 }
