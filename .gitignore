@@ -3,5 +3,7 @@
 /node_modules/
 /mcp/tchiowa/node_modules/
 /storage/dumps/
+/storage/psysh/
+/console
 /docs
 AGENTS.md

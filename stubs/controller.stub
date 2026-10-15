@@ -10,7 +10,7 @@ class {{ class }}
     {
         // TODO: implementar
     }
-    public function show(\$id)
+    public function show($id)
     {
         // TODO: implementar
     }
@@ -23,24 +23,13 @@ class {{ class }}
         // TODO: implementar
     }
 
-    public function edit(\$id)
+    public function edit($id)
     {
         // TODO: implementar
     }
 
-    public function update(\$id)
+    public function update($id)
     {
         // TODO: implementar
     }
-    public function update(\$id)
-    {
-        // TODO: implementar
-    }
-    
-    
-    
-
-
-    
 }
-
