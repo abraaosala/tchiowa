@@ -8,10 +8,10 @@
     "build": "vite build"
   },
   "devDependencies": {
+    "@salasolucoes/mcp": "^1.0.0",
     "autoprefixer": "^10.5.2",
     "tailwindcss": "^3.4.0",
-    "vite": "^8.1.3",
-    "@salasolucoes/mcp": "file:../mcp"
+    "vite": "^8.1.3"
   },
   "dependencies": {
     "alpinejs": "^3.15.8"
