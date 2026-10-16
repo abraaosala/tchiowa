@@ -1,7 +1,7 @@
 .env
 /vendor/
 /node_modules/
-/mcp/tchiowa/node_modules/
+/mcp/sala/node_modules/
 /storage/dumps/
 /storage/psysh/
 /console

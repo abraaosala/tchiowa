@@ -10,9 +10,9 @@
         ".ai/guidelines/frontend.md"
     ],
     "mcp": {
-        "tchiowa-boost": {
+        "sala-boost": {
             "type": "local",
-            "command": ["node", "mcp/tchiowa/dist/index.js"],
+            "command": ["node", "mcp/sala/dist/index.js"],
             "enabled": true
         },
         "context7": {

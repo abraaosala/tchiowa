@@ -1,8 +1,8 @@
 {
     "mcpServers": {
-        "tchiowa-boost": {
+        "sala-boost": {
             "command": "node",
-            "args": ["mcp/tchiowa/dist/index.js"]
+            "args": ["mcp/sala/dist/index.js"]
         },
         "context7": {
             "type": "remote",

@@ -4,8 +4,8 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { CallToolRequestSchema, ListToolsRequestSchema, } from "@modelcontextprotocol/sdk/types.js";
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join, resolve } from "node:path";
-// Resolve project root: mcp/tchiowa/src/index.ts -> ../../..
+import { join, resolve, basename } from "node:path";
+// Resolve project root: mcp/sala/src/index.ts -> ../../..
 const PROJECT_ROOT = resolve(import.meta.dirname ?? ".", "..", "..", "..");
 function sh(cmd, cwd = PROJECT_ROOT) {
     try {
@@ -40,16 +40,16 @@ function listModels() {
         return [];
     }
 }
-const server = new Server({ name: "tchiowa-boost", version: "1.0.0" }, { capabilities: { tools: {} } });
+const server = new Server({ name: "sala-boost", version: "1.0.0" }, { capabilities: { tools: {} } });
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: [
         {
-            name: "tchiowa_info",
-            description: "PHP + Illuminate/BladeOne/Phinx versions, DB driver, Eloquent models — Application Info (Boost equiv.)",
+            name: "sala_info",
+            description: "PHP + Illuminate/BladeOne/Phinx versions, DB driver, Eloquent models - Application Info (Boost equiv.)",
             inputSchema: { type: "object", properties: {}, additionalProperties: false },
         },
         {
-            name: "tchiowa_schema",
+            name: "sala_schema",
             description: "Database schema: SHOW TABLES + DESCRIBE <table>. Use table param to describe one table.",
             inputSchema: {
                 type: "object",
@@ -58,12 +58,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
             },
         },
         {
-            name: "tchiowa_query",
+            name: "sala_query",
             description: "Read-only SELECT via Capsule (blocks DROP/DELETE/UPDATE/INSERT without write:true).",
             inputSchema: {
                 type: "object",
                 properties: {
-                    sql: { type: "string", description: "SQL — only SELECT allowed unless write:true" },
+                    sql: { type: "string", description: "SQL - only SELECT allowed unless write:true" },
                     write: { type: "boolean", description: "Allow write statements (default false)" },
                 },
                 required: ["sql"],
@@ -71,7 +71,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
             },
         },
         {
-            name: "tchiowa_logs",
+            name: "sala_logs",
             description: "Tail storage/logs (last N lines).",
             inputSchema: {
                 type: "object",
@@ -87,12 +87,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 server.setRequestHandler(CallToolRequestSchema, async (req) => {
     const { name, arguments: args } = req.params;
     const a = (args ?? {});
-    if (name === "tchiowa_info") {
+    if (name === "sala_info") {
         const phpV = sh("php -v");
         const composer = readJsonSafe(join(PROJECT_ROOT, "composer.json"));
         const pkg = readJsonSafe(join(PROJECT_ROOT, "package.json"));
         const phinx = readJsonSafe(join(PROJECT_ROOT, "phinx.php")) ? "phinx.php present" : "phinx.php missing";
-        // Try to read config/database.php default
         let dbInfo = "";
         try {
             const dbPhp = readFileSync(join(PROJECT_ROOT, "config", "database.php"), "utf8").slice(0, 800);
@@ -101,7 +100,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
         catch { }
         const models = listModels();
         const text = [
-            "## tchiowa_info",
+            "## sala_info",
             "### PHP",
             phpV.split("\n").slice(0, 3).join("\n"),
             "### composer.json (require)",
@@ -113,33 +112,30 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
             "### config/database.php (head)",
             dbInfo || "(not readable)",
             "### Eloquent models",
-            models.length ? models.join(", ") : "(none yet — run make:model)",
+            models.length ? models.join(", ") : "(none yet - run make:model)",
             "### project root",
             PROJECT_ROOT,
         ].join("\n\n");
         return { content: [{ type: "text", text }] };
     }
-    if (name === "tchiowa_schema") {
+    if (name === "sala_schema") {
         const table = a.table?.trim();
-        // Use php -r to query via Capsule without booting full app if DB not configured
         const phpCode = table
             ? `require 'vendor/autoload.php'; use Illuminate\\Database\\Capsule\\Manager as C; $c=new C; $cfg=require 'config/database.php'; $conn=$cfg['connections']['mysql']??$cfg['connections'][array_key_first($cfg['connections'])]; $c->addConnection($conn); $c->setAsGlobal(); $c->bootEloquent(); $rows=C::select('DESCRIBE \`'+addslashes(table)+'\`'); foreach($rows as $r) echo json_encode($r).PHP_EOL;`
             : `require 'vendor/autoload.php'; use Illuminate\\Database\\Capsule\\Manager as C; $c=new C; $cfg=require 'config/database.php'; $conn=$cfg['connections']['mysql']??$cfg['connections'][array_key_first($cfg['connections'])]; $c->addConnection($conn); $c->setAsGlobal(); $c->bootEloquent(); $rows=C::select('SHOW TABLES'); foreach($rows as $r) echo json_encode(array_values((array)$r)[0]).PHP_EOL;`;
-        // Simpler: use sh with php -r, fallback to SHOW TABLES via phinx config
         const out = table
             ? sh(`php -r "${phpCode.replace(/"/g, '\\"')}"`)
             : sh(`php -r "${phpCode.replace(/"/g, '\\"')}"`);
         if (out && !out.includes("Fatal") && !out.includes("Error")) {
             return { content: [{ type: "text", text: out.slice(0, 6000) || "(empty)" }] };
         }
-        // Fallback: list migration files as schema hint
         const migDir = join(PROJECT_ROOT, "database", "migrations");
         const migs = existsSync(migDir) ? readdirSync(migDir).slice(0, 20).join("\n") : "(no migrations)";
         return {
-            content: [{ type: "text", text: `DB not reachable — fallback migrations list:\n${migs}\n\nError: ${out.slice(0, 800)}` }],
+            content: [{ type: "text", text: `DB not reachable - fallback migrations list:\n${migs}\n\nError: ${out.slice(0, 800)}` }],
         };
     }
-    if (name === "tchiowa_query") {
+    if (name === "sala_query") {
         const sql = String(a.sql ?? "").trim();
         const write = Boolean(a.write);
         if (!sql)
@@ -148,43 +144,65 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
         if (!isSelect && !write) {
             return { content: [{ type: "text", text: "Blocked: only SELECT allowed without write:true. Pass write:true to allow." }], isError: true };
         }
-        // Execute via Capsule
         const b64 = Buffer.from(sql, "utf8").toString("base64");
         const php = `require 'vendor/autoload.php'; use Illuminate\\Database\\Capsule\\Manager as C; $c=new C; $cfg=require 'config/database.php'; $k=$cfg['default']??'mysql'; $conn=$cfg['connections'][$k]??$cfg['connections']['mysql']; $c->addConnection($conn); $c->setAsGlobal(); $c->bootEloquent(); $sql=base64_decode('${b64}'); $rows=C::select($sql); echo json_encode($rows, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);`;
         const out = sh(`php -r "${php.replace(/"/g, '\\"')}"`);
         return { content: [{ type: "text", text: out.slice(0, 8000) || "(no rows)" }] };
     }
-    if (name === "tchiowa_logs") {
+    if (name === "sala_logs") {
         const lines = Math.min(Math.max(Number(a.lines ?? 50), 1), 200);
         const file = a.file?.trim();
-        const logDir = join(PROJECT_ROOT, "storage", "logs");
-        let target = file ? join(logDir, file) : "";
-        if (!target || !existsSync(target)) {
-            // auto-detect first .log
+        const logDir = resolve(join(PROJECT_ROOT, "storage", "logs"));
+        let target = "";
+        if (file) {
+            const base = basename(file);
+            if (base !== file || file.includes("/") || file.includes("\\") || file.includes("..")) {
+                return { content: [{ type: "text", text: "Invalid file name. Use only the log file name (e.g. app.log), no paths." }], isError: true };
+            }
+            if (!/^[\w.\-]+\.log$/.test(base)) {
+                return { content: [{ type: "text", text: "Invalid file name. Allowed: letters, numbers, _, -, . and must end with .log" }], isError: true };
+            }
+            const candidate = resolve(logDir, base);
+            const logDirResolved = resolve(logDir);
+            if (!candidate.startsWith(logDirResolved)) {
+                return { content: [{ type: "text", text: "Invalid file path. Path traversal blocked." }], isError: true };
+            }
+            if (existsSync(candidate)) {
+                target = candidate;
+            }
+            else {
+                return { content: [{ type: "text", text: `Log file not found: ${base}` }], isError: true };
+            }
+        }
+        if (!target) {
             try {
                 const files = readdirSync(logDir).filter((f) => f.endsWith(".log"));
                 target = files.length ? join(logDir, files[0]) : "";
             }
             catch { }
             if (!target) {
-                // fallback: storage/logs not exist, try phinx log or just report
                 return { content: [{ type: "text", text: `No log file found in ${logDir}. Pass file param or check storage/logs.` }] };
             }
         }
-        const out = sh(`powershell -Command "Get-Content -Tail ${lines} -Path '${target.replace(/'/g, "''")}'"`);
-        const alt = out || sh(`tail -n ${lines} "${target}"`);
-        return { content: [{ type: "text", text: `## ${target}\n\n${(alt || out).slice(0, 8000)}` }] };
+        try {
+            const content = readFileSync(target, "utf8");
+            const allLines = content.split(/\r?\n/);
+            const tail = allLines.slice(-lines).join("\n");
+            return { content: [{ type: "text", text: `## ${target}\n\n${tail.slice(0, 8000)}` }] };
+        }
+        catch (e) {
+            return { content: [{ type: "text", text: `Error reading log ${target}: ${e?.message ?? String(e)}` }], isError: true };
+        }
     }
     return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
 });
 async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    // Keep alive — errors to stderr
-    console.error(`[tchiowa-boost] MCP ready — root: ${PROJECT_ROOT}`);
+    console.error(`[sala-boost] MCP ready - root: ${PROJECT_ROOT}`);
 }
 main().catch((e) => {
-    console.error("[tchiowa-boost] fatal:", e);
+    console.error("[sala-boost] fatal:", e);
     process.exit(1);
 });
 //# sourceMappingURL=index.js.map
