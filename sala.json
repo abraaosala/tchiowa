@@ -6,6 +6,6 @@
     "skills": ["crud-tchiowa", "frontend-tchiowa", "phinx-migration"],
     "mcp": {
         "command": "node",
-        "args": ["node_modules/@sala/mcp/dist/index.js"]
+        "args": ["node_modules/@salasolucoes/mcp/dist/index.js"]
     }
 }

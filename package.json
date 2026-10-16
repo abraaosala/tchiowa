@@ -11,7 +11,7 @@
     "autoprefixer": "^10.5.2",
     "tailwindcss": "^3.4.0",
     "vite": "^8.1.3",
-    "@sala/mcp": "file:../mcp"
+    "@salasolucoes/mcp": "file:../mcp"
   },
   "dependencies": {
     "alpinejs": "^3.15.8"
