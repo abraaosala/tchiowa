@@ -2,7 +2,7 @@
     "mcpServers": {
         "sala-boost": {
             "command": "node",
-            "args": ["mcp/sala/dist/index.js"]
+            "args": ["node_modules/@sala/mcp/dist/index.js"]
         },
         "context7": {
             "type": "remote",

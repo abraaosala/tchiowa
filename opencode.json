@@ -12,7 +12,7 @@
     "mcp": {
         "sala-boost": {
             "type": "local",
-            "command": ["node", "mcp/sala/dist/index.js"],
+            "command": ["node", "node_modules/@sala/mcp/dist/index.js"],
             "enabled": true
         },
         "context7": {
